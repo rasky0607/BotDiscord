@@ -6,6 +6,8 @@ var chivato =false;//Esta variable controla que el bot rebele o el nombre del us
 var argumentos = null;//Propiedad Array que contiene los argumentos
 var comando = null;//Propiedad String que contiene el comando ejecutado
 
+
+
  //#region ### PROPIEDADES ###
  function getArgumentos(){
      if(argumentos!=null)
@@ -27,7 +29,6 @@ function setComando(cmd){
 
 //#endregion
 
-
 //const miembrostags = client.users.cache.map(u => `${u.username}`).join(", ");//optine la lista de usuarios del servidor
 
 //#region ### EVENTOS ### 
@@ -42,7 +43,7 @@ client.on('ready', () => {
     if(message.author.bot)//Si el mensaje lo mando otro bot, no repondera
         return;
 
-     //Si el mensaje no comienza por un prefix o prefijo, no se tratara o gestionara el mensaje   
+     //Si el mensaje NO comienza por un prefix o prefijo, no se tratara o gestionara el mensaje   
     if(message.content.startsWith(config.prefix)){
         console.log("\n-----------COMIENZO TRATAMIENTO DE ENTRADA-------------\n")
     //## Separamos el comando de los argumentos y los semaparamos para guardarlos en las propiedades Argumentos y Comando
@@ -81,13 +82,9 @@ client.on('ready', () => {
                
     }
 
-  //let rol = message.guild.roles.cache.find(r => r.name === "Administrador");
     //####Comando de prueba ####  esto permite Testear codigo sucio para entender las librias de discord y deburar codigo ##POR AQUIIIIII
     if(message.content.startsWith(config.prefix+'prueba')) {
-       //let rol = message.guild.roles.cache.find(r => r.name === "Banquer@ corrupt@"); PENDIENTE PREGUNTAR POR LOS PRIVILEGIOS DEL USUARIO QUE MANDO EL MENSAJE
-       //let rol = message.client.user.username;
-       //var n = client.users.cache.randomKey();
-        //client.user.setUsername("BotWilly"); //Cambia el nombre al bot NO USAR
+     
       //console.log(n);
       Equipo();
         
@@ -146,7 +143,7 @@ function Equipo(){   ///PO AQUIU********[TESTEO]
     {
         if(i==0)//En la posicion 0 de los argumentos/args siempre estara el numero de equipos que deseamos realizar o entre los que hay que dividir a los participantes
         {
-            console.log("pos: ["+i+"] "+arrayArgumentosParaEquipos[i]);
+            //console.log("Numero de equipos a hacer se encuentra en pos: ["+i+"] y es -> "+arrayArgumentosParaEquipos[i]);
             numeroDeEquipos=arrayArgumentosParaEquipos[i];
         }
         else if(i!=0){
@@ -154,67 +151,52 @@ function Equipo(){   ///PO AQUIU********[TESTEO]
         }
     }
 
+    //Si podemos convertir a entero el primer parametro recodigo (Que se supone ser el n umero de equipos a hacer)
     if(parseInt(numeroDeEquipos)){
+        console.log("Numero de participantes: "+arrayParticipantesEquipos.length);
         var  num= parseInt(numeroDeEquipos);//Realizamos un casting de string a int
         num = Math.abs(num);//Lo pasamos al valor absoluto sin signo
         var numParticipantes =arrayParticipantesEquipos.length;
         var resultadoDivision =Math.round(numParticipantes/num);//se redondea el resultado
-        console.log("Result: "+resultadoDivision);
-        //Creamos un array con el numero de posiciones equivalentes a el numero de equipos que vamos a crear 'variable-> num'
-        var arrayEquiposCreados=new Array(num);
+        console.log("Dividiremos los participantes en : "+resultadoDivision);
 
-        /*Mientras la longitud del array de participantes es mayor que el numero de equipos que vamos hacer
-        sigue sacando participantes para repartir entre equipos [TESTEO]*/
-        while(arrayParticipantesEquipos.length> num){
-            var equipoEscogido= Math.floor(Math.random()*num);
-            for(var i=0;i<num;i++){
-                console.log("Bucle 1 : ");
-            var posEscogida=Math.floor(Math.random()*arrayParticipantesEquipos.length);//Numero aleatorio que escoge un elegido
-            //Splice
-            var elementoEscogido= arrayParticipantesEquipos.splice(posEscogida,1);
-            arrayEquiposCreados[equipoEscogido]+=elementoEscogido.toString()+",";//Guardamos los participantes
-            }
-
-        }
-
-        //Por si quedan restos de el reparto de participantes entre los equipos
-        var  longitudElemento = 0;
-        while(arrayParticipantesEquipos.length>0 && arrayParticipantesEquipos.length<num){
-            for(var i=0;i<arrayEquiposCreados.length;i++){
-                console.log("Bucle 2 : ");
-               
-                console.log("Variable longitudElemento: "+longitudElemento);
-                
-                if(longitudElemento!=0 && longitudElemento>arrayEquiposCreados[i].length)//si este elemnto es menor que se le añade un participante.//ERROR AQUI
-                {
-                    console.log("ENTRO");
-                    //Añade un participante
-                    var posEscogida=Math.floor(Math.random()*arrayParticipantesEquipos.length);//Numero aleatorio que escoge un elegido
-                     //Splice
-                    var elementoEscogido= arrayParticipantesEquipos.splice(posEscogida,1);
-                    arrayEquiposCreados[i]+=elementoEscogido.toString()+",";//Guardamos los participantes
+        var arrayEquipos = new Array(num);//Equipos entre los que dividimos los participantes
+        //------------------
+        //Sacamos el numero de participantes que deben ir para cada grupo, es decir si 'num' es 2, vamos sacando participantes para un grupo de dos en dos de forma aleatoria
+        while(arrayParticipantesEquipos.length!=0)
+        {
+            //console.log("------------------------------\nTamaño del array-> "+arrayParticipantesEquipos.length);
+            for(var i = 0; i<num;i++){               
+                /*Si la lista de participantes son un numero  mayor que en el que se van a dividir 
+                los equipos es decir si los grupo 'num' son de 2, dos para cada equipo, de forma que si queda solo un elemento en el array, cogera dos elementos de este*/             
+                if(arrayParticipantesEquipos.length>=num)
+                {                  
+                    var posElegida = Math.floor(Math.random()*arrayParticipantesEquipos.length);
+                    var participanteEscogido = arrayParticipantesEquipos.splice(posElegida,1);//Escogemos una posicion del array "arrayParticipantesEquipos" sacamos su dato y eliminamos ese elemnto del array
+                    if(arrayEquipos[i]!=null)//Si ya hay algo en es aposicion del array
+                        arrayEquipos[i]+= participanteEscogido+" ";
+                    else//Si aun no hay nada en esa posicion del array
+                        arrayEquipos[i]= participanteEscogido+" ";
                 }
-                longitudElemento = arrayEquiposCreados[i].length;
-
+                else if(arrayParticipantesEquipos.length<num && arrayParticipantesEquipos.length>0)
+                {    
+                     //Cogemos el unico que queda y lo metemos en el ultimo grupo  al que se asigno un participantes que sera el que menos tenia hasta el momento
+                    var participanteEscogido=arrayParticipantesEquipos.splice(0,1);
+                    if(arrayEquipos[i]!=null)//Si ya hay algo en es aposicion del array
+                        arrayEquipos[i]+=participanteEscogido+" ";
+                    else//Si aun no hay nada en esa posicion del array
+                        arrayEquipos[i]= participanteEscogido+" ";
+                }              
             }
         }
 
-        console.log("Que  hay: "+arrayEquiposCreados);
-
-
-   
+        console.log("### EQUIPOS ####");
+        for(var i =0;i<arrayEquipos.length;i++){
+            console.log(" ### Mi equipo "+(i+1) +"->"+arrayEquipos[i]);
+        }
         
-
     }
-    else{//Error al transformar el tipo de cade a int
-        console.log("No se transformo");   
-    }
-
    
-
-    console.log("El tipo de dato de numeroDeEquipos -> "+ typeof(numeroDeEquipos));
-
-    console.log("Numero de equipos ha hacer-> "+numeroDeEquipos+"\nParticipantes-> "+arrayParticipantesEquipos);
 
 }
 
