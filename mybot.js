@@ -138,82 +138,92 @@ client.on('ready', () => {
 
 /*Esta funcion escoge aleatoriamente a uno de los participantes pasados por una cadena, separados por,*/
 function Sorteo(){
-     var arrayParticipantesSorteo= new Array(); 
-     arrayParticipantesSorteo = getArgumentos(); 
-     var elegido = Math.floor(Math.random()*arrayParticipantesSorteo.length);//Numero aleatorio que escoge un ganador
-     console.log("GANADOR: "+elegido);    
-     return arrayParticipantesSorteo[elegido];  
+     var arrayParticipantesSorteo= new Array();
+     if(getArgumentos() != null){ 
+         console.log(getArgumentos());
+        arrayParticipantesSorteo = getArgumentos(); 
+        var elegido = Math.floor(Math.random()*arrayParticipantesSorteo.length);//Numero aleatorio que escoge un ganador
+        console.log("GANADOR: "+elegido);    
+        return arrayParticipantesSorteo[elegido];  
+     }else{
+         return msjError;
+     }
+    
 }
 
 /**Esta funcion divide el numero de participantes pasados por argumentos entre un numero indicado, apra realizar un numero de equipos en base a los participantes
  * Ej: -equipo 2 juan pedro ramon esther
  * El primer argumento despues del comando, ser siempre el numero de equipos se desea realizar, este ejemplo anterior 2*/ 
-function Equipo(){   ///PO AQUIU********[TESTEO]
-    var arrayArgumentosParaEquipos=new Array();
-    arrayArgumentosParaEquipos=getArgumentos();
+function Equipo(){
+    if(getArgumentos()!=null)
+    {  
+        var arrayArgumentosParaEquipos=new Array();
+        arrayArgumentosParaEquipos=getArgumentos();
 
-    var arrayParticipantesEquipos=new Array();   
-    var numeroDeEquipos=0;//Equipos que se va realizar o entre los que hay que dividir o repartir los participantes
-    //Guardamos el numero de equipos que se  desea hacer por un lado y los participantes por otro
-    for(var i=0;i<arrayArgumentosParaEquipos.length;i++)
-    {
-        if(i==0)//En la posicion 0 de los argumentos/args siempre estara el numero de equipos que deseamos realizar o entre los que hay que dividir a los participantes
+        var arrayParticipantesEquipos=new Array();   
+        var numeroDeEquipos=0;//Equipos que se va realizar o entre los que hay que dividir o repartir los participantes
+        //Guardamos el numero de equipos que se  desea hacer por un lado y los participantes por otro
+        for(var i=0;i<arrayArgumentosParaEquipos.length;i++)
         {
-            //console.log("Numero de equipos a hacer se encuentra en pos: ["+i+"] y es -> "+arrayArgumentosParaEquipos[i]);
-            numeroDeEquipos=arrayArgumentosParaEquipos[i];
-        }
-        else if(i!=0){
-            arrayParticipantesEquipos[i-1]=arrayArgumentosParaEquipos[i];
-        }
-    }
-
-    //Si podemos convertir a entero el primer parametro recodigo (Que se supone ser el n umero de equipos a hacer)
-    if(parseInt(numeroDeEquipos)){
-        console.log("Numero de participantes: "+arrayParticipantesEquipos.length);
-        var  num= parseInt(numeroDeEquipos);//Realizamos un casting de string a int
-        num = Math.abs(num);//Lo pasamos al valor absoluto sin signo
-        var numParticipantes =arrayParticipantesEquipos.length;
-        var resultadoDivision =Math.round(numParticipantes/num);//se redondea el resultado
-        console.log("Dividiremos los participantes en : "+resultadoDivision);
-
-        var arrayEquipos = new Array(num);//Equipos entre los que dividimos los participantes
-        //------------------
-        //Sacamos el numero de participantes que deben ir para cada grupo, es decir si 'num' es 2, vamos sacando participantes para un grupo de dos en dos de forma aleatoria
-        while(arrayParticipantesEquipos.length!=0)
-        {
-            //console.log("------------------------------\nTamaño del array-> "+arrayParticipantesEquipos.length);
-            for(var i = 0; i<num;i++){               
-                /*Si la lista de participantes son un numero  mayor que en el que se van a dividir 
-                los equipos es decir si los grupo 'num' son de 2, dos para cada equipo, de forma que si queda solo un elemento en el array, cogera dos elementos de este*/             
-                if(arrayParticipantesEquipos.length>=num)
-                {                  
-                    var posElegida = Math.floor(Math.random()*arrayParticipantesEquipos.length);
-                    var participanteEscogido = arrayParticipantesEquipos.splice(posElegida,1);//Escogemos una posicion del array "arrayParticipantesEquipos" sacamos su dato y eliminamos ese elemnto del array
-                    if(arrayEquipos[i]!=null)//Si ya hay algo en es aposicion del array
-                        arrayEquipos[i]+= participanteEscogido+" ";
-                    else//Si aun no hay nada en esa posicion del array
-                        arrayEquipos[i]= participanteEscogido+" ";
-                }
-                else if(arrayParticipantesEquipos.length<num && arrayParticipantesEquipos.length>0)
-                {    
-                     //Cogemos el unico que queda y lo metemos en el ultimo grupo  al que se asigno un participantes que sera el que menos tenia hasta el momento
-                    var participanteEscogido=arrayParticipantesEquipos.splice(0,1);
-                    if(arrayEquipos[i]!=null)//Si ya hay algo en es aposicion del array
-                        arrayEquipos[i]+=participanteEscogido+" ";
-                    else//Si aun no hay nada en esa posicion del array
-                        arrayEquipos[i]= participanteEscogido+" ";
-                }              
+            if(i==0)//En la posicion 0 de los argumentos/args siempre estara el numero de equipos que deseamos realizar o entre los que hay que dividir a los participantes
+            {
+                //console.log("Numero de equipos a hacer se encuentra en pos: ["+i+"] y es -> "+arrayArgumentosParaEquipos[i]);
+                numeroDeEquipos=arrayArgumentosParaEquipos[i];
+            }
+            else if(i!=0){
+                arrayParticipantesEquipos[i-1]=arrayArgumentosParaEquipos[i];
             }
         }
 
-        console.log("### EQUIPOS ####");
-        for(var i =0;i<arrayEquipos.length;i++){
-            console.log(" ### Mi equipo "+(i+1) +"->"+arrayEquipos[i]);
-        }
+        //Si podemos convertir a entero el primer parametro recodigo (Que se supone ser el n umero de equipos a hacer)
+        if(parseInt(numeroDeEquipos) && arrayParticipantesEquipos!=""){
+            console.log("Numero de participantes: "+arrayParticipantesEquipos.length);
+            var  num= parseInt(numeroDeEquipos);//Realizamos un casting de string a int
+            num = Math.abs(num);//Lo pasamos al valor absoluto sin signo
+            var numParticipantes =arrayParticipantesEquipos.length;
+            var resultadoDivision =Math.round(numParticipantes/num);//se redondea el resultado
+            console.log("Dividiremos los participantes en : "+resultadoDivision);
 
-        return arrayEquipos;
+            var arrayEquipos = new Array(num);//Equipos entre los que dividimos los participantes
+            //------------------
+            //Sacamos el numero de participantes que deben ir para cada grupo, es decir si 'num' es 2, vamos sacando participantes para un grupo de dos en dos de forma aleatoria
+            while(arrayParticipantesEquipos.length!=0)
+            {
+                //console.log("------------------------------\nTamaño del array-> "+arrayParticipantesEquipos.length);
+                for(var i = 0; i<num;i++){               
+                    /*Si la lista de participantes son un numero  mayor que en el que se van a dividir 
+                    los equipos es decir si los grupo 'num' son de 2, dos para cada equipo, de forma que si queda solo un elemento en el array, cogera dos elementos de este*/             
+                    if(arrayParticipantesEquipos.length>=num)
+                    {                  
+                        var posElegida = Math.floor(Math.random()*arrayParticipantesEquipos.length);
+                        var participanteEscogido = arrayParticipantesEquipos.splice(posElegida,1);//Escogemos una posicion del array "arrayParticipantesEquipos" sacamos su dato y eliminamos ese elemnto del array
+                        if(arrayEquipos[i]!=null)//Si ya hay algo en es aposicion del array
+                            arrayEquipos[i]+= participanteEscogido+" ";
+                        else//Si aun no hay nada en esa posicion del array
+                            arrayEquipos[i]= participanteEscogido+" ";
+                    }
+                    else if(arrayParticipantesEquipos.length<num && arrayParticipantesEquipos.length>0)
+                    {    
+                        //Cogemos el unico que queda y lo metemos en el ultimo grupo  al que se asigno un participantes que sera el que menos tenia hasta el momento
+                        var participanteEscogido=arrayParticipantesEquipos.splice(0,1);
+                        if(arrayEquipos[i]!=null)//Si ya hay algo en es aposicion del array
+                            arrayEquipos[i]+=participanteEscogido+" ";
+                        else//Si aun no hay nada en esa posicion del array
+                            arrayEquipos[i]= participanteEscogido+" ";
+                    }              
+                }
+            }
+
+            console.log("### EQUIPOS ####");
+            for(var i =0;i<arrayEquipos.length;i++){
+                console.log(" ### Mi equipo "+(i+1) +"->"+arrayEquipos[i]);
+            }
+            return arrayEquipos;
+        }
+        return null;//Si el valor no se puede convertir, es decir si no se paso un numero de equipos a hacer y en su lugar se paso un caracter como -equipos D paco ramon juan
+    }else{
+        return null;//Si no se paso ningun argumento tras el comando, como por ejemplo -equipos
     }
-   return null;
 
 }
 
@@ -221,32 +231,33 @@ function Equipo(){   ///PO AQUIU********[TESTEO]
 intentando evitar espacios o posiciones vacias*/
 function GuardarArgumentos(msj){
     console.log(" Resto del msj que se guardaran como argumentos --> "+msj+"\n");
-    var mensaje = new String(msj);//Necesitamos reconvertirloa  string para que nos permite usar el metodo split de la clase String 
-    var arraymsj = new Array();
-    arraymsj = mensaje.split(',');
-    var args = new Array();//Array donde guardaremos los argumentos
+    if(msj !=""){
+        var mensaje = new String(msj);//Necesitamos reconvertirloa  string para que nos permite usar el metodo split de la clase String 
+        var arraymsj = new Array();
+        arraymsj = mensaje.split(',');
+        var args = new Array();//Array donde guardaremos los argumentos
 
-     /*Esta variable indica la cantidad que se va restar al indice de 'i' de el 'arraymsj'  para guardarlo los datos en el segundo array 'args',ya que por defecto
-        como  vamos a guardar la primera posicion del 'arraymsj'  en el array 'args' tendremos que ir restando 0 al indice (el decir en pricipio como si nada)
-         para cuadrar posiciones de los array,
-         pero si se encuentra un ESPACIO o una Posicon del array VACIA.. esta varaible
-        se incrementara a medida que encuentre espacios.. restando  1 o mas(segun el numero de espacios que se encuentren o pos vacias) al indice*/
-         var restador = 0;
+        /*Esta variable indica la cantidad que se va restar al indice de 'i' de el 'arraymsj'  para guardarlo los datos en el segundo array 'args',ya que por defecto
+            como  vamos a guardar la primera posicion del 'arraymsj'  en el array 'args' tendremos que ir restando 0 al indice (el decir en pricipio como si nada)
+            para cuadrar posiciones de los array,
+            pero si se encuentra un ESPACIO o una Posicon del array VACIA.. esta varaible
+            se incrementara a medida que encuentre espacios.. restando  1 o mas(segun el numero de espacios que se encuentren o pos vacias) al indice*/
+            var restador = 0;
 
-         //Buscamos posiciones vacias en el array como ""
-    for(var i=0;i<arraymsj.length;i++){         
-        if(arraymsj[i]==""){ //si arraymsj es del mismo tipo que "" y el contenido es IGUAL de una cadena vacia (Es decir NO hay un dato en esa pos del array)  
-            restador++;
+            //Buscamos posiciones vacias en el array como ""
+        for(var i=0;i<arraymsj.length;i++){         
+            if(arraymsj[i]==""){ //si arraymsj es del mismo tipo que "" y el contenido es IGUAL de una cadena vacia (Es decir NO hay un dato en esa pos del array)  
+                restador++;
+            }
+            if(arraymsj[i]!=""){ //si arraymsj es del mismo tipo que "", pero el contenido es diferente de una cadena vacia (Es decir hay un dato en esa pos del array)    
+                args[i-restador]=arraymsj[i];//Guardamos los parametros en un nuevo array que almacenaremos en la propiedad Argumentos
+            }                        
         }
-        if(arraymsj[i]!=""){ //si arraymsj es del mismo tipo que "", pero el contenido es diferente de una cadena vacia (Es decir hay un dato en esa pos del array)    
-            args[i-restador]=arraymsj[i];//Guardamos los parametros en un nuevo array que almacenaremos en la propiedad Argumentos
-        }                        
+        
+        console.log(" Argumentos --> "+args+"\n\n Longitud de array de argumentos [args] --> "+args.length+"\n\n-----------FIN TRATAMIENTO DE ENTRADA-------------\n");
+        setArgumentos(args);//Guardamos el array de argumentos
+        //console.log("El getargumentos "+ getArgumentos());
     }
-    
-    console.log(" Argumentos --> "+args+"\n\n Longitud de array de argumentos [args] --> "+args.length+"\n\n-----------FIN TRATAMIENTO DE ENTRADA-------------\n");
-    setArgumentos(args);//Guardamos el array de argumentos
-    //console.log("El getargumentos "+ getArgumentos());
-
 }
  
  //Logeo el bot en discord, es decir inicia sesion
