@@ -7,8 +7,9 @@ var argumentos = null;//Propiedad Array que contiene los argumentos
 var comando = null;//Propiedad String que contiene el comando ejecutado
 //Mensaje de error estandar para cuando algun comando no recibe los parametros indicados
 var msjError ="Lo siento pero no entiendo tu comando.. puede que sea erroneo, usa "+config.prefix +"help para más info!.";
-
-
+var msjNoPerimsos="Lo siento, no tienes permisos para ejecutar ese comando ... :thumbsdown: :thumbsdown: :thumbsdown: :thumbsdown:";
+var ArrayRolAdmin= new Array();
+var userAdmin= false;
  //#region ### PROPIEDADES ###
  function getArgumentos(){
      if(argumentos!=null)
@@ -39,12 +40,15 @@ client.on('ready', () => {
     console.log(`Estoy listo!`);
  });
 
- //#### Respuesta al comando help "Ayuda de comandos para el usuario" ####
+
   client.on('message', (message) => {
+
+    //#region region ### Tratamiento de comando parametros y roles del usuario que activo el evento ###     
     if(message.author.bot)//Si el mensaje lo mando otro bot, no repondera
         return;
 
-     //Si el mensaje NO comienza por un prefix o prefijo, no se tratara o gestionara el mensaje   
+  
+    //Si el mensaje NO comienza por un prefix o prefijo, no se tratara o gestionara el mensaje   
     if(message.content.startsWith(config.prefix)){
         console.log("\n-----------COMIENZO TRATAMIENTO DE ENTRADA-------------\n")
     //## Separamos el comando de los argumentos y los semaparamos para guardarlos en las propiedades Argumentos y Comando
@@ -55,8 +59,26 @@ client.on('ready', () => {
       console.log(" Comando --> "+ cmd+"\n");
       //Guardamos los argumentos en la propiedad GerArgumentos()
       GuardarArgumentos(msj);
-    }
 
+     //Determinamos si el usuario que escribio un mensaje tiene un rol de administrador o no, estos roles estan indicados enel fichero config.json y son cogidos manualmente de cada servidor
+     RecogerRolesAdmins();
+
+      //Comprobar si el usuario que ejecuto un comando es Admin o no
+        for(var i=0;i<ArrayRolAdmin.length;i++){
+            console.log("Rol "+(i+1)+" "+config.rolesAdmin[i]);
+            if(message.guild.roles.cache.find(r => r.name === config.rolesAdmin[i])){
+                console.log("Si lo tiene!!!");
+                userAdmin=true;
+                break;
+            }else{
+                userAdmin=false;
+            }
+        }
+        console.log("El usuario tiene un rol de admin --> "+userAdmin);
+    }
+    //#endregion
+
+    //#### Respuesta al comando help "Ayuda de comandos para el usuario" ####
     if(message.content.startsWith(config.prefix+'help')) {
       message.channel.send("Comandos disponibles: [Usa siempre el prefijo "+config.prefix+"] delante de cada comando.");
       message.channel.send("[sorteo] \n###Ejemplo 1###\n "+config.prefix+"sorteo Pedro Marcos Maria. \n ###Ejemplo 2### (usando menciones)\n"+config.prefix+"sorteo @Pedro @Marcos @Maria.");       
@@ -66,19 +88,27 @@ client.on('ready', () => {
             message.channel.send("¡El ganador es: **"+Sorteo()+"**! :partying_face:");             
         }
     //#### Activar chivato ####  esto permite que el bot chive los mensajes eliminados
-    if(message.content.startsWith(config.prefix+'chivato on')) {     
-        if(!chivato){          
-            message.delete(); //Borra el mensaje para que no se mantenga en el historial 
-            chivato=true;
-            message.channel.send("[El chivato esta activado] :eyes: os estoy vigilando a todos .... "); 
-        }               
+    if(message.content.startsWith(config.prefix+'chivato on')) {    
+        if(userAdmin){
+            if(!chivato){          
+                message.delete(); //Borra el mensaje para que no se mantenga en el historial 
+                chivato=true;
+                message.channel.send("[El chivato esta activado] :eyes: os estoy vigilando a todos .... "); 
+            }
+        }else{
+            message.channel.send(msjNoPerimsos); 
+        }              
     }
     //#### Desactivar chivato ####  esto permite que el bot NO chive los mensajes eliminados
     if(message.content.startsWith(config.prefix+'chivato off')) {
-        if(chivato){
-            message.delete();//Borra el mensaje para que no se mantenga en el historial 
-            chivato=false;
-            message.channel.send("[El chivato esta desactivado] :smirk: :kissing_heart:   no dire ni mu de tus travesuras ... "); 
+        if(userAdmin){
+            if(chivato){
+                message.delete();//Borra el mensaje para que no se mantenga en el historial 
+                chivato=false;
+                message.channel.send("[El chivato esta desactivado] :smirk: :kissing_heart:   no dire ni mu de tus travesuras ... "); 
+            }
+        }else{
+            message.channel.send(msjNoPerimsos); 
         }
                
     }
@@ -101,11 +131,7 @@ client.on('ready', () => {
     //####Comando de prueba ####  esto permite Testear codigo sucio para entender las librias de discord y deburar codigo ##POR AQUIIIIII
     if(message.content.startsWith(config.prefix+'prueba')) {
      
-      //console.log(n);
-      Equipo();
         
-        //console.log("El rol es: "+rol.resolveID("Banquer@ corrupt@"));  
-        //message.channel.send("[ROL]: "+rol);      
     }
         
  //#### Respues a un mensaje de un cliente de discord con el contenido 'ping' y respuesta del bot 'pong' ####
@@ -151,7 +177,7 @@ function Sorteo(){
     
 }
 
-/**Esta funcion divide el numero de participantes pasados por argumentos entre un numero indicado, apra realizar un numero de equipos en base a los participantes
+/**Esta funcion divide el numero de participantes pasados por argumentos entre un numero indicado, para realizar un numero de equipos en base a los participantes
  * Ej: -equipo 2 juan pedro ramon esther
  * El primer argumento despues del comando, ser siempre el numero de equipos se desea realizar, este ejemplo anterior 2*/ 
 function Equipo(){
@@ -175,7 +201,7 @@ function Equipo(){
             }
         }
 
-        //Si podemos convertir a entero el primer parametro recodigo (Que se supone ser el n umero de equipos a hacer)
+        //Si podemos convertir a entero el primer parametro recodigo (Que se supone ser el numero de equipos a hacer) y si hay datos en el arrayParticipantesEquipos
         if(parseInt(numeroDeEquipos) && arrayParticipantesEquipos!=""){
             console.log("Numero de participantes: "+arrayParticipantesEquipos.length);
             var  num= parseInt(numeroDeEquipos);//Realizamos un casting de string a int
@@ -225,6 +251,13 @@ function Equipo(){
         return null;//Si no se paso ningun argumento tras el comando, como por ejemplo -equipos
     }
 
+}
+
+function RecogerRolesAdmins(){
+    for(var i=0;i<config.rolesAdmin.length;i++){
+        ArrayRolAdmin[i]=config.rolesAdmin[i];
+        console.log("Rol recogido en pos-> "+i+" "+ArrayRolAdmin[i]);
+    }
 }
 
 /*Esta funcion es especifica para optener los argumentos pasados por el usuario y guardarlos en la propiedad correpondiente de los argumentos

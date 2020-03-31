@@ -1,7 +1,9 @@
 {
     "_comentario": "En este documento se declararan variable o propiedades de configuracion para nuestro fihero mybot.js.La varaible token es la que identifica nuestro bot para logearlo y la prefix el caracter especial para llamarlo",
 
-    "token":"NjkwOTc5NDQwMDQ1NDU3NTIy.XoO90w.PfD2jXldSxaz8CkyZEJVGASQDJ4",
-    "prefix":"-"
-   
+    "token":"NjkwOTc5NDQwMDQ1NDU3NTIy.XoPD3g.pLGENDZmMAhDLIGRScKgv82n69I",
+    "prefix":"-",
+    "rolesAdmin":["TREMENDOS REALES","Banquer@ corrupt@"]
+
    }
+   
