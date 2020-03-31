@@ -5,7 +5,8 @@ const client = new Discord.Client();
 var chivato =false;//Esta variable controla que el bot rebele o el nombre del usuario que elimina mensajes.
 var argumentos = null;//Propiedad Array que contiene los argumentos
 var comando = null;//Propiedad String que contiene el comando ejecutado
-
+//Mensaje de error estandar para cuando algun comando no recibe los parametros indicados
+var msjError ="Lo siento pero no entiendo tu comando.. puede que sea erroneo, usa "+config.prefix +"help para más info!.";
 
 
  //#region ### PROPIEDADES ###
@@ -80,6 +81,21 @@ client.on('ready', () => {
             message.channel.send("[El chivato esta desactivado] :smirk: :kissing_heart:   no dire ni mu de tus travesuras ... "); 
         }
                
+    }
+    //####Comando de equipo ####  Este comando permite hacer equipo en base a un numero de equipos a realizar y unos participantes o nombres pasados por parametros
+    if(message.content.startsWith(config.prefix+'equipo')) {  
+        var equipos= Equipo();   
+        if(equipos != null)//Si es distinto de null es que tood fue bien
+        {
+            message.channel.send("Los equipos son los siguientes: \n");
+        
+            for(var i=0;i<equipos.length;i++){
+                message.channel.send("Equipo "+(i+1)+": "+equipos[i]);
+            }
+        }
+        else{
+            message.channel.send(msjError);
+        }
     }
 
     //####Comando de prueba ####  esto permite Testear codigo sucio para entender las librias de discord y deburar codigo ##POR AQUIIIIII
@@ -194,9 +210,10 @@ function Equipo(){   ///PO AQUIU********[TESTEO]
         for(var i =0;i<arrayEquipos.length;i++){
             console.log(" ### Mi equipo "+(i+1) +"->"+arrayEquipos[i]);
         }
-        
+
+        return arrayEquipos;
     }
-   
+   return null;
 
 }
 
